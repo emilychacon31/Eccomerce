@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore,doc,setDoc, getDoc } from 'firebase/firestore';
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnyc4733O0_M8MCOzuvmWBuKgQ53TlI0o",
@@ -14,71 +14,88 @@ const firebaseConfig = {
 
 
 //Inicializamos firebase
-const firebaseApp= initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
 const provider = new GoogleAuthProvider();
 
 
 provider.setCustomParameters({
-    prompt: 'select_account'
+  prompt: 'select_account'
 });
 
 //Autenticacion
 export const auth = getAuth();
 
 //Que la autenticacion sea con google
-export const signInWithGooglePopup=()=>{
-    return signInWithPopup (auth, provider);
+export const signInWithGooglePopup = () => {
+  return signInWithPopup(auth, provider);
 };
 
-export const db= getFirestore();
+export const db = getFirestore();
 //base datos
 //Coleccion// es como una tabla de base de datos
 //Coleccion usuarios 
-export const crearDocumentoUsuarios = async(usuario, informacionAdicional) => {
-  if(!usuario) return;
+export const crearDocumentoUsuarios = async (usuario, informacionAdicional) => {
+  if (!usuario) return;
   //DocRef= Documento de Referencia
-  const usuarioDocRef= doc(db, 'usuarios',usuario.uid);
-  const usuarioSnapshot= await getDoc(usuarioDocRef);
+  //uid: unic id //para identificar el usuario
+  const usuarioDocRef = doc(db, 'usuarios', usuario.uid);
+  //Enviar doc a la coleccion mediante snapchot
+  const usuarioSnapshot = await getDoc(usuarioDocRef);
 
   console.log(!usuarioSnapshot.exists());
 
   if (!usuarioSnapshot.exists()) {
     //Destructurar los datos de usuario
-    const {displayNam: nombre, email}= usuario;
+    const { displayNam: nombre, email } = usuario;
     //La fecha en que fue creado el usuario
-    const fechaCreacion= new Date();
-  
+    const fechaCreacion = new Date();
+
     try {
       setDoc(usuarioDocRef, {
         nombre,
         email,
         fechaCreacion,
         ...informacionAdicional,
-  
+
       });
       // Si da error mandelo a consola
     } catch (error) {
       console.log(error);
-      
+
     }
   }
   return usuarioDocRef;
- 
+
 };
 //Funcion propia de Firestore para autenticarse con correo y contraseña
 //Esta funcion la exportamos y importamos en el componente  FormularioRegistro
-export const createUserWithEmailPasswordFirestore= async (email, password)=>{
-    //Sino existe email o password salgase de la funcion
-  if (!email || !password ) return;
+export const createUserWithEmailPasswordFirestore = async (email, password) => {
+  //Sino existe email o password salgase de la funcion
+  if (!email || !password) return;
   //retorneme la funcion cuando exista la contraseña, pasword
-  return await createUserWithEmailAndPassword(auth,email,password);
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
 
 //funcion para iniciar sesion
-export const signInWithEmailPasswordFirestore= async (email, password)=>{
+export const signInWithEmailPasswordFirestore = async (email, password) => {
   //Sino existe email o password salgase de la funcion
-if (!email || !password ) return;
-//retorneme la funcion cuando exista la contraseña, pasword
-return await signInWithEmailAndPassword(auth,email,password);
+  if (!email || !password) return;
+  //retorneme la funcion cuando exista la contraseña, pasword
+  return await signInWithEmailAndPassword(auth, email, password);
 };
+
+//Para hacer que un usuario salga de la sesión
+export const signOutUsuario = async () => {
+  return await signOut(auth);
+};
+//Cuando el estado de autenticacion cambia
+export const onAuthStateChangedListener = async (callback) => {
+  return await onAuthStateChanged(auth, callback);
+}
+
+//La manera recomendada de obtener el usuario actual es establecer un observador (Listener) en el objeto Auth:
+//export const onAuthStateChangedListener = async (funcion) => {
+  //return await onAuthStateChanged(auth, funcion);
+//};
+
