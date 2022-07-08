@@ -9,7 +9,7 @@ export const ProductosContext = createContext({
 });
 //Aqui obtenemos los datos de usuarioLogueado y setUsuarioLogueado utilizando useState
 export const ProductosProvider = ({ children }) => {
-    const [productos, setProductos] = useState(PRODUCTOS);
+    const [productos] = useState(PRODUCTOS);
 
     const value = { productos };
 
