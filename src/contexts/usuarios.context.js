@@ -23,6 +23,7 @@ export const UsuarioProvider = ({ children }) => {
         //Contenido --- Traer al usuario
         const estadoUsuario = onAuthStateChangedListener((usuario) => {
             setUsuarioLogueado(usuario);
+            console.log(estadoUsuario);
             //Navegate sirve para navegar entre rutas cuando la pagina es renderizada
             // if (usuario) {
             //     <Navigate to={'/'} replace={true} />
