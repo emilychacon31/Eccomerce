@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { crearDocumentoUsuarios } from "../../utils/firebase/firebase.util";
 import { createUserWithEmailPasswordFirestore } from "../../utils/firebase/firebase.util";
 
@@ -6,6 +6,8 @@ import { mostrarAlerta, erroAutenticacion } from "../../utils/sweetalert2/sweeta
 
 import Input from "../../layouts/Input/Input";
 import Button from "../../layouts/Button/Button";
+
+
 
 const FormularioRegistro = () => {
 
@@ -21,7 +23,11 @@ const FormularioRegistro = () => {
     const [camposFormulario, setCamposFormulario] = useState(datosFormulario);
     //destructuramos el objeto dinamico para hacer mas limpio el codigo y pasarselo al value del form
     const { nombre, correo, contrasena, confirmarContrasena } = camposFormulario;
-    console.log(camposFormulario);
+
+    //Lo que va en parentesis de useContext es la estructura que se va a usar
+    //Desetructuramos la funcion setUsuarioLogueado para enviar los datos de usuario al contexto
+    //Para que despues de registrado quede la sesion iniciada
+
     //event.preventDefault sirve para que no se refresque la pagina
 
     //Se hace un array de objetos para refactorizar el codigo porque antes era codigo repetido
@@ -58,6 +64,7 @@ const FormularioRegistro = () => {
     const handleChanged = (evento) => {
         //Target capta lo que escribe el usuario en el form // entonces necesitamos destrcuturarlo para poder tener los datos
         const { name, value } = evento.target;
+
         //Spread ...De los datos de un objeto realiza un nuevo objeto
         setCamposFormulario({ ...camposFormulario, [name]: value });
 
@@ -80,9 +87,13 @@ const FormularioRegistro = () => {
             //obtener el user
             const { user } = await createUserWithEmailPasswordFirestore(correo, contrasena);
             //mandar el nombre 
+            //enviar usuario a la funcion de firestore creardocumentousuarios
             crearDocumentoUsuarios(user, { nombre: nombre });
+            //alerta
             mostrarAlerta('Usuario creado', 'realizado con éxito', 'success');
+
             setCamposFormulario(datosFormulario);
+
         } catch (error) {
             erroAutenticacion(error.code);
 
@@ -111,7 +122,9 @@ const FormularioRegistro = () => {
                 }
                 <div style={{ marginTop: '20px' }}>
                     <Button type={'submit'} texto={'Registrarse'} />
+
                 </div>
+
 
             </form>
         </div>

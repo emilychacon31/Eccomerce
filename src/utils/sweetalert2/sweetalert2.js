@@ -29,7 +29,7 @@ export const erroAutenticacion = (codigo) => {
     case 'auth/weak-password':
       Swal.fire('Error', 'La contraseña debe tener más de 6 digitos', 'warning');
       break;
-    case 'contrasena-no-coincide':
+    case 'contrasena-no-coinciden':
       Swal.fire('Error', 'Las contraseñas no coinciden', 'warning');
       break;
     case 'auth/user-not-found':
