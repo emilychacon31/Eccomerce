@@ -1,22 +1,23 @@
 import { useContext } from "react";
 import { ProductosContext } from './../../contexts/productos.context';
 
+import TarjetaProducto from './../Tienda/TarjetaProducto/TarjetaProducto';
 import './Tienda.scss';
 const Tienda = () => {
     const { productos } = useContext(ProductosContext);
     return (
         <div className="tienda">
             <h2>Tienda</h2>
-            {
-                productos.map(({ id, nombre }) => {
-                    return (
-                        <div key={id}>
-                            <h3>{nombre}</h3>
-                        </div>
+            <div className="grid-productos">
+                {
+                    productos.map((producto) => {
+                        return (
+                            <TarjetaProducto key={producto.id} producto={producto} />
 
-                    )
-                })
-            }
+                        )
+                    })
+                }
+            </div>
         </div>
     )
 }
